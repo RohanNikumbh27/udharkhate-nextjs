@@ -22,7 +22,7 @@ export function CustomerCard({ customer }: CustomerCardProps) {
 
   return (
     <div
-      onClick={() => router.push(`/customer/${customer.id}`)}
+      onClick={() => router.push(`/${customer.id}`)}
       className="group relative bg-card rounded-[var(--radius-card)] p-4 sm:p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/10 border border-border"
       style={{
         background: 'linear-gradient(135deg, var(--card) 0%, var(--surface) 100%)',

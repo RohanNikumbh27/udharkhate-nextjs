@@ -11,9 +11,16 @@ export function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddDialog, setShowAddDialog] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    storage.initializeSampleData();
-    loadCustomers();
+    // Simulate a small delay for smoother transition and to ensure hydration matches
+    const init = async () => {
+      storage.initializeSampleData();
+      loadCustomers();
+      setIsLoading(false);
+    };
+    init();
   }, []);
 
   const loadCustomers = () => {
@@ -41,12 +48,40 @@ export function HomePage() {
     setShowAddDialog(false);
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="bg-gradient-to-b from-primary to-primary/95 px-4 sm:px-6 pt-6 sm:pt-8 pb-8 sm:pb-10 shadow-lg rounded-b-[2rem]">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-between mb-6">
+              <div className="h-14 w-40 bg-white/20 rounded animate-pulse" />
+              <div className="h-14 w-14 bg-white/20 rounded-[1.125rem] animate-pulse" />
+            </div>
+            <div className="h-14 w-full bg-white/20 rounded-[var(--radius-button)] animate-pulse" />
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8">
+            <div className="h-32 bg-card rounded-[var(--radius-card)] animate-pulse" />
+            <div className="h-32 bg-card rounded-[var(--radius-card)] animate-pulse" />
+          </div>
+          <div className="space-y-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-24 bg-card rounded-[var(--radius-card)] animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-gradient-to-b from-primary to-primary/95 text-primary-foreground px-4 sm:px-6 pt-6 sm:pt-8 pb-5 sm:pb-6 shadow-lg">
+      {/* Header */}
+      <div className="bg-gradient-to-b from-primary to-primary/95 text-primary-foreground px-4 sm:px-6 pt-6 sm:pt-8 pb-8 sm:pb-10 shadow-lg rounded-b-[2rem]">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-white mb-1">Khatabook</h1>
               <p className="text-primary-foreground/80 text-sm sm:text-base">
@@ -73,8 +108,8 @@ export function HomePage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 -mt-5 sm:-mt-6 mb-6 sm:mb-8">
+        {/* Summary Cards - Grid without negative margin */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6">
           {/* You will get */}
           <div className="bg-gradient-to-br from-success to-success/80 rounded-[var(--radius-card)] p-5 sm:p-6 text-white shadow-xl">
             <div className="flex items-start justify-between mb-3">

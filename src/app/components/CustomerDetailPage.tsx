@@ -94,7 +94,8 @@ export function CustomerDetailPage() {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-gradient-to-b from-primary to-primary/95 text-primary-foreground px-4 sm:px-6 pt-6 sm:pt-8 pb-5 sm:pb-6 shadow-lg">
+      {/* Header */}
+      <div className="bg-gradient-to-b from-primary to-primary/95 text-primary-foreground px-4 sm:px-6 pt-6 sm:pt-8 pb-8 sm:pb-10 shadow-lg rounded-b-[2rem]">
         <div className="max-w-4xl mx-auto">
           <button
             onClick={() => router.push('/')}
@@ -128,7 +129,7 @@ export function CustomerDetailPage() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         {/* Balance Card */}
-        <div className={`-mt-5 sm:-mt-6 mb-6 sm:mb-8 rounded-[var(--radius-card)] p-6 sm:p-8 shadow-xl ${isPositive
+        <div className={`mt-6 mb-6 sm:mb-8 rounded-[var(--radius-card)] p-6 sm:p-8 shadow-xl ${isPositive
           ? 'bg-gradient-to-br from-success to-success/80'
           : 'bg-gradient-to-br from-warning to-warning/80'
           } text-white`}>
