@@ -1,5 +1,6 @@
 import "@/styles/index.css";
 import type { Metadata, Viewport } from "next";
+import { ThemeProvider } from "@/app/components/theme-provider";
 
 export const metadata: Metadata = {
     title: "Udharkhate",
@@ -22,7 +23,14 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className="antialiased bg-background text-foreground">
-                {children}
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    {children}
+                </ThemeProvider>
             </body>
         </html>
     );

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, TrendingUp, TrendingDown, Users } from 'lucide-react';
 import { CustomerCard } from '@/app/components/CustomerCard';
 import { AddCustomerDialog } from '@/app/components/AddCustomerDialog';
+import { ModeToggle } from '@/app/components/mode-toggle';
 import { storage, Customer } from '@/utils/storage';
 
 export function HomePage() {
@@ -11,7 +12,15 @@ export function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddDialog, setShowAddDialog] = useState(false);
 
+  const [activeTab, setActiveTab] = useState<'people' | 'summary'>('people');
   const [isLoading, setIsLoading] = useState(true);
+
+  // Auto-switch to people tab when searching
+  useEffect(() => {
+    if (searchQuery) {
+      setActiveTab('people');
+    }
+  }, [searchQuery]);
 
   useEffect(() => {
     // Simulate a small delay for smoother transition and to ensure hydration matches
@@ -88,8 +97,11 @@ export function HomePage() {
                 Manage your business accounts
               </p>
             </div>
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-[1.125rem] bg-white/10 backdrop-blur-sm flex items-center justify-center">
-              <Users className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            <div className="flex items-center gap-3">
+              <ModeToggle />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-[1.125rem] bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                <Users className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+              </div>
             </div>
           </div>
 
@@ -108,67 +120,88 @@ export function HomePage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
-        {/* Summary Cards - Grid without negative margin */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6">
-          {/* You will get */}
-          <div className="bg-gradient-to-br from-success to-success/80 rounded-[var(--radius-card)] p-5 sm:p-6 text-white shadow-xl">
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[0.875rem] bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
-              </div>
-              <div className="text-right">
-                <div className="text-white/80 text-xs sm:text-sm mb-1">You will get</div>
-                <div className="font-bold text-2xl sm:text-3xl">{formatAmount(totalToGet)}</div>
-              </div>
-            </div>
-            <div className="text-white/70 text-xs sm:text-sm mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/20">
-              Total receivable amount
-            </div>
-          </div>
-
-          {/* You will give */}
-          <div className="bg-gradient-to-br from-warning to-warning/80 rounded-[var(--radius-card)] p-5 sm:p-6 text-white shadow-xl">
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[0.875rem] bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" />
-              </div>
-              <div className="text-right">
-                <div className="text-white/80 text-xs sm:text-sm mb-1">You will give</div>
-                <div className="font-bold text-2xl sm:text-3xl">{formatAmount(totalToGive)}</div>
-              </div>
-            </div>
-            <div className="text-white/70 text-xs sm:text-sm mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/20">
-              Total payable amount
-            </div>
-          </div>
+        {/* Tabs */}
+        <div className="flex p-1 bg-muted/50 rounded-[1.25rem] mt-6 mb-6 relative">
+          <button
+            onClick={() => setActiveTab('people')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[1rem] text-sm font-medium transition-all duration-300 ${activeTab === 'people'
+              ? 'bg-primary/50 text-primary-foreground shadow-md'
+              : 'text-muted-foreground hover:text-foreground'
+              }`}
+          >
+            <Users className="w-4 h-4" />
+            People
+          </button>
+          <button
+            onClick={() => setActiveTab('summary')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[1rem] text-sm font-medium transition-all duration-300 ${activeTab === 'summary'
+              ? 'bg-primary/50 text-primary-foreground shadow-md'
+              : 'text-muted-foreground hover:text-foreground'
+              }`}
+          >
+            <TrendingUp className="w-4 h-4" />
+            Summary
+          </button>
         </div>
 
-        {/* Customers Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-foreground mb-1">Customers</h2>
-            <p className="text-muted-foreground">
-              {filteredCustomers.length} {filteredCustomers.length === 1 ? 'customer' : 'customers'}
-            </p>
-          </div>
-        </div>
-
-        {/* Customers List */}
-        {filteredCustomers.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 rounded-[1.5rem] bg-surface mx-auto mb-6 flex items-center justify-center">
-              <Users className="w-12 h-12 text-muted-foreground" />
+        {/* Summary Content */}
+        {activeTab === 'summary' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* You will get */}
+            <div className="bg-gradient-to-br from-success to-success/80 rounded-[var(--radius-card)] p-5 sm:p-6 text-white shadow-xl">
+              <div className="flex items-start justify-between mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[0.875rem] bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
+                </div>
+                <div className="text-right">
+                  <div className="text-white/80 text-xs sm:text-sm mb-1">You will get</div>
+                  <div className="font-bold text-2xl sm:text-3xl">{formatAmount(totalToGet)}</div>
+                </div>
+              </div>
+              <div className="text-white/70 text-xs sm:text-sm mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/20">
+                Total receivable amount
+              </div>
             </div>
-            <h3 className="text-foreground mb-2">No customers found</h3>
-            <p className="text-muted-foreground mb-6">
-              {searchQuery ? 'Try a different search term' : 'Add your first customer to get started'}
-            </p>
+
+            {/* You will give */}
+            <div className="bg-gradient-to-br from-warning to-warning/80 rounded-[var(--radius-card)] p-5 sm:p-6 text-white shadow-xl">
+              <div className="flex items-start justify-between mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-[0.875rem] bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" />
+                </div>
+                <div className="text-right">
+                  <div className="text-white/80 text-xs sm:text-sm mb-1">You will give</div>
+                  <div className="font-bold text-2xl sm:text-3xl">{formatAmount(totalToGive)}</div>
+                </div>
+              </div>
+              <div className="text-white/70 text-xs sm:text-sm mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/20">
+                Total payable amount
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {filteredCustomers.map(customer => (
-              <CustomerCard key={customer.id} customer={customer} />
-            ))}
+        )}
+
+        {/* People Content */}
+        {activeTab === 'people' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Customers List */}
+            {filteredCustomers.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="w-24 h-24 rounded-[1.5rem] bg-surface mx-auto mb-6 flex items-center justify-center">
+                  <Users className="w-12 h-12 text-muted-foreground" />
+                </div>
+                <h3 className="text-foreground mb-2">No customers found</h3>
+                <p className="text-muted-foreground mb-6">
+                  {searchQuery ? 'Try a different search term' : 'Add your first customer to get started'}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {filteredCustomers.map(customer => (
+                  <CustomerCard key={customer.id} customer={customer} />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
